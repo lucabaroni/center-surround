@@ -23,7 +23,7 @@ gap = 0.2
 
 idxs = np.arange(458)
 corrs = pickleread('/project/experiment_data/convnext/avg_corr.pkl')
-idxs = idxs[corrs>0.75][:250]
+idxs = idxs[corrs>0.75]
 
 device = f'cuda'
 
