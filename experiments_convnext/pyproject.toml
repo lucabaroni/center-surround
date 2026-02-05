@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "center_surround"
+version = "0.0"
+description = "Experiments to study center surround modulation"
+authors = [
+    {name = "lucabaroni"}
+]
+readme = "README.md"
+requires-python = ">=3.9"
+
+[tool.setuptools.packages.find]
+include = ["surroundmodulation*"]
