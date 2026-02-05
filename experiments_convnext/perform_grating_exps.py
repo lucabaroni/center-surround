@@ -6,33 +6,27 @@ dj.config["database.host"] = os.environ["DJ_HOST"]
 dj.config["database.user"] = os.environ["DJ_USER"]
 dj.config["database.password"] = os.environ["DJ_PASSWORD"]
 import matplotlib.pyplot as plt
-
 import numpy as np
 from surroundmodulation.models import SingleCellModel
-
 from tqdm import tqdm
 from nnvision.models.trained_models.v1_task_fine_tuned import v1_convnext_ensemble
-from imagen.image import BoundingBox
 from surroundmodulation.utils.misc import pickleread, picklesave
 from surroundmodulation.analyses import *
 
 std = 0.05
 mean = 0
 orientations = np.linspace(0, np.pi, 37)[:-1]
-spatial_frequencies = np.linspace(1, 6, 21) #note: change spatial freq
-radii = np.linspace(0.0, 2, 41)#this 
+spatial_frequencies = np.linspace(1, 6, 21) 
+radii = np.linspace(0.0, 2, 41)
 img_res = [93, 93]
 size= [2.35,2.35]
 gap = 0.2
 
-# idxs = np.array(pickleread('/project/experiment_data/convnext/gabor_idx.pickle'))
 idxs = np.arange(458)
 corrs = pickleread('/project/experiment_data/convnext/avg_corr.pkl')
 idxs = idxs[corrs>0.75]
 
-
 device = f'cuda'
-
 print(device)
 
 all_neuron_model = v1_convnext_ensemble
@@ -85,19 +79,11 @@ for idx in idxs:
         A_opt, x0_opt, y0_opt, sigma_x_opt, sigma_y_opt, rho_opt, fitted_dot_stim = gauss_fit(dot_stim_norm)
         error = np.mean((fitted_dot_stim - dot_stim_norm)**2)
         if error < 0.2:
-            # plt.imshow(np.concatenate([fitted_dot_stim, dot_stim_norm], -1))
-            # plt.title(f'{error:.2f}')
-            # plt.colorbar()
-            # plt.show()
             good_idxs.append(idx)
             positions[idx] = [x0_opt, y0_opt]
             fitted_dot_stim_params[idx] = A_opt, x0_opt, y0_opt, sigma_x_opt, sigma_y_opt, rho_opt
             fitted_dot_stim_d[idx] = fitted_dot_stim
         else: 
-            # plt.imshow(np.concatenate([fitted_dot_stim, dot_stim_norm], -1))
-            # plt.title(f'{error:.2f}')
-            # plt.colorbar()
-            # plt.show()
             bad_idxs.append(idx)
       
     except: 
@@ -108,17 +94,6 @@ d = {}
 
 for idx in tqdm(good_idxs):
     model = SingleCellModel(v1_convnext_ensemble, idx)
-    # optimization exps
-    # mei, mei_act = create_mei(model, gaussianblur=3., device = device)
-    # mei_mask,  px_mask, py_mask = create_mask_from_mei(mei, zscore_thresh=1.5)
-    # print(px_mask, py_mask)
-    # print(positions[idx][0], positions[idx][1])
-    # plt.imshow(mei_mask)
-    # plt.plot(px_mask, py_mask, '*')
-    # plt.show()
-#     exc_full_surr, exc_only_surr, exc_full_surr_act, exc_only_surr_act = create_surround(model, mei, mei_mask, objective='max', gaussianblur=3., device = device, surround_std=.10) # remove surround_std=.10 to get original experiments
-#     inh_full_surr, inh_only_surr, inh_full_surr_act, inh_only_surr_act = create_surround(model, mei, mei_mask, objective='min', gaussianblur=3., device = device, surround_std=.10) # remove surround_std=.10 to get original experiments
-
     px = positions[idx][0]
     py = positions[idx][1]
     
@@ -133,20 +108,18 @@ for idx in tqdm(good_idxs):
         contrast = 0.2, 
         radii = radii)
 
-    monotonic, radius_95, top_radius_, suppression_index, st_r_95 = assert_size_tuning(radii, np.array(st_resp).max(axis=-1)) #this should be slightly fixed
+    monotonic, radius_95, top_radius_, suppression_index, st_r_95 = assert_size_tuning(radii, np.array(st_resp).max(axis=-1)) 
     
     d[idx] = {
         'dot_stim' : dot_stim_dict[idx],
         'center_dot_stim': [px, py],
         'fitted_dot_stim_params': fitted_dot_stim_params[idx], 
         'fitted_dot_stim': fitted_dot_stim_d[idx],
-
         'masked_grating_max_ori' : best_grating_dict[idx]['max_ori'],
         'masked_grating_max_sf' : best_grating_dict[idx]['max_sf'],
         'max_phase_max_phase' : best_grating_dict[idx]['max_phase'], 
         'masked_grating_max_stim' : best_grating_dict[idx]['stim_max'],
         'masked_grating_max_resp' :  best_grating_dict[idx]['resp_max'],
-
         'size_tuning_top_radius' : top_radius,
         'size_tuning_radius_95' : radius_95,
         'size_tuning_top_phase' : top_phase,
@@ -188,6 +161,5 @@ for idx in tqdm(good_idxs):
             # 'oc_stims_95': oc_stims_95
             })
 
-
-    picklesave(f'/project/experiment_data/convnext/final_classical_data.pickle', d)
+    picklesave(f'/project/experiment_data/convnext/classical_data.pickle', d)
 # %%
