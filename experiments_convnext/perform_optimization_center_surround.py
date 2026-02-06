@@ -22,7 +22,7 @@ size= [2.35,2.35]
 gap = 0.2
 
 idxs = np.arange(458)
-corrs = pickleread('/project/experiment_data/convnext/avg_corr.pkl')
+corrs = pickleread('experiment_data/convnext/avg_corr.pkl')
 idxs = idxs[corrs>0.75]
 
 device = f'cuda'
@@ -56,5 +56,5 @@ for idx in tqdm(idxs):
         'inh_only_surr_act' : inh_only_surr_act, 
         }
 
-    picklesave(f'/project/experiment_data/convnext/data_opt.pickle', d)
+    picklesave(f'experiment_data/convnext/data_opt.pickle', d)
 

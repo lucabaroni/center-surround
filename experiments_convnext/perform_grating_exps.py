@@ -23,7 +23,7 @@ size= [2.35,2.35]
 gap = 0.2
 
 idxs = np.arange(458)
-corrs = pickleread('/project/experiment_data/convnext/avg_corr.pkl')
+corrs = pickleread('experiment_data/convnext/avg_corr.pkl')
 idxs = idxs[corrs>0.75]
 
 device = f'cuda'
@@ -161,5 +161,5 @@ for idx in tqdm(good_idxs):
             # 'oc_stims_95': oc_stims_95
             })
 
-    picklesave(f'/project/experiment_data/convnext/classical_data.pickle', d)
+    picklesave(f'experiment_data/convnext/classical_data.pickle', d)
 # %%

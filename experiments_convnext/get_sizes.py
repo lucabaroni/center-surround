@@ -3,15 +3,11 @@ import numpy as np
 from surroundmodulation.utils.misc import pickleread
 
 idxs = np.arange(458)
-corrs = pickleread('/project/experiment_data/convnext/avg_corr.pkl')
+corrs = pickleread('experiment_data/convnext/avg_corr.pkl')
 idxs = idxs[corrs>0.75]
 
-d = pickleread('/project/experiment_data/convnext/data_final_1_opt.pickle')
-d1 = pickleread('/project/experiment_data/convnext/data_final_2_opt.pickle')
-d.update(d1)
-
-
-d_classical = pickleread('/project/experiment_data/convnext/final_classical_data.pickle')
+d = pickleread('experiment_data/convnext/data_opt.pickle')
+d_classical = pickleread('experiment_data/convnext/final_classical_data.pickle')
 
 idxs = d_classical.keys()
 #%% estimate size of neurons with size tuning:

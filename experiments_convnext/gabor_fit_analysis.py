@@ -79,12 +79,10 @@ def distance_between_angles(angle1, angle2):
 
 #%% further select cells
 
-d = pickleread('/project/experiment_data/convnext/data_final_1_opt.pickle')
-d1 = pickleread('/project/experiment_data/convnext/data_final_2_opt.pickle')
-d.update(d1)
+d = pickleread('experiment_data/convnext/data_opt.pickle')
 print(len(d.keys()))
 
-d_classical = pickleread('/project/experiment_data/convnext/final_classical_data.pickle')
+d_classical = pickleread('experiment_data/convnext/final_classical_data.pickle')
 print(len(d_classical.keys()))
 
 idxs = list(d_classical.keys())
@@ -142,9 +140,9 @@ for i in idxs:
         # plt.show()
 
 #%%
-picklesave('results_gb_fitting.pickle', results)
+picklesave('experiment_data/convnext/results_gb_fitting.pickle', results)
 #%% select 
-results = pickleread('results_gb_fitting.pickle')
+results = pickleread('experiment_data/convnext/results_gb_fitting.pickle')
 #%%
 good_idxs = []
 x = np.linspace(-2.35/2, 2.35/2, 93)
@@ -368,6 +366,6 @@ for image_type in image_types:
         # plt.show()
     
     final_res[image_type]=deepcopy(results_gauss_gabor_fits)
-    picklesave('final_res_no_bounds.pickle',  final_res)
+    picklesave('experiment_data/convnext/final_res_no_bounds.pickle',  final_res)
 
 # %%

@@ -114,5 +114,5 @@ plot_img(mei.squeeze(), -0.6,.6)
 plt.imshow(inh_full_surr.squeeze(), vmin=-.6,vmax=.6, cmap='Greys_r')
 plt.xticks([])
 plt.yticks([])
-plt.savefig('final_figs/Heeger_divisive.pdf', dpi=300)
+plt.savefig('experiment_data/convnext/Heeger_divisive.pdf', dpi=300)
 # %%

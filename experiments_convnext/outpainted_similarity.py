@@ -123,9 +123,7 @@ dataloaders = get_data(dataset_fn, dataset_config)
 outpainted = pickleread('/project/monkey_outpainted.pkl')
 print(sorted(outpainted.keys()))
 
-d = pickleread('/project/experiment_data/convnext/data_final_1_opt.pickle')
-d2 = pickleread('/project/experiment_data/convnext/data_final_2_opt.pickle')
-d.update(d2)
+d = pickleread('experiment_data/convnext/data_opt.pickle')
 #%%
 #%%
 n=1
