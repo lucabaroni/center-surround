@@ -46,6 +46,8 @@ uv pip install \
 # Install imagen from CSNG-MFF
 uv pip install git+https://github.com/CSNG-MFF/imagen.git
 
+uv pip install git+https://github.com/lucabaroni/classicalv1.git
+
 # wandb
 uv pip install wandb
 
