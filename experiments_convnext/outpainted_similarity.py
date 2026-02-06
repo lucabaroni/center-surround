@@ -3,15 +3,14 @@ from copyreg import pickle
 from re import L
 from statistics import mean
 from surroundmodulation.utils.misc import pickleread
-from nnvision.models.trained_models.v1_task_fine_tuned import v1_convnext_ensemble, v1_convnext
-from nnfabrik.builder import get_model, get_trainer, get_data
+from nnvision.models.trained_models.v1_task_fine_tuned import v1_convnext_ensemble
+from nnfabrik.builder import get_data
 import torch
 import torch.nn as nn 
 import copy
 import numpy as np
 import matplotlib.pyplot as plt
 from surroundmodulation.analyses import create_mask_from_mei
-from tqdm import tqdm
 import featurevis.ops as ops
 
 
@@ -336,12 +335,3 @@ for iii in list(idxs_outpainted)[:10]:
     # plt.tight_layout()
     plt.show()
     print(' ')
-
-
-# %%
-out_imgs.shape
-# %%
-idxs_outpainted
-# %%
-
-# %%
