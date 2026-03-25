@@ -1,5 +1,7 @@
 #%%
+import os
 from copyreg import pickle
+from pathlib import Path
 from re import L
 from statistics import mean
 from surroundmodulation.utils.misc import pickleread
@@ -35,47 +37,50 @@ def plot_fit(x, y, xlabel=None, ylabel=None, title=None):
     plt.legend()
     plt.show()
 
-seed = 1 
-dataset_fn, dataset_config = ('nnvision.datasets.monkey_loaders.monkey_static_loader_combined',
-                {'dataset': 'CSRF19_V1',
-                'neuronal_data_files': ['/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3631896544452.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3632669014376.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3632932714885.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3633364677437.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3634055946316.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3634142311627.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3634658447291.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3634744023164.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3635178040531.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3635949043110.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3636034866307.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3636552742293.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3637161140869.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3637248451650.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3637333931598.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3637760318484.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3637851724731.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3638367026975.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3638456653849.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3638885582960.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3638373332053.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3638541006102.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3638802601378.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3638973674012.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3639060843972.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3639406161189.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3640011636703.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3639664527524.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3639492658943.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3639749909659.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3640095265572.pickle',
-                '/project/data/monkey/toliaslab/CSRF19_V1/neuronal_data/CSRF19_V1_3631807112901.pickle'],
-                'image_cache_path': '/project/data/monkey/toliaslab/CSRF19_V1/images',
-                'crop': 70,
-                'subsample': 1,
-                'seed': 1000,
-                'time_bins_sum': 12,
-                'batch_size': 128})
+seed = 1
+
+
+def get_new_format_session_dirs(data_root):
+    train_dir = data_root / "train"
+    if not train_dir.exists():
+        raise FileNotFoundError(
+            f"Missing train directory at {train_dir}. "
+            "Download and unzip the V1 dataset first."
+        )
+
+    session_dirs = sorted(
+        str(path)
+        for path in train_dir.iterdir()
+        if path.is_dir() and (path / "responses.csv").exists()
+    )
+    if not session_dirs:
+        raise FileNotFoundError(
+            f"No session folders with responses.csv found in {train_dir}"
+        )
+    return session_dirs
+
+
+# Download and prepare the V1 data first, for example with:
+#   V1_DATA_ROOT=/project/v1_data bash scripts/prepare_v1_data.sh
+# This should create:
+#   <V1_DATA_ROOT>/train/<session_id>/responses.csv
+#   <V1_DATA_ROOT>/test/<session_id>/responses.csv
+#   <V1_DATA_ROOT>/images_npy/*.npy
+data_root = Path(os.environ.get("V1_DATA_ROOT", "/project/v1_data"))
+dataset_name = os.environ.get("V1_DATASET_NAME", "CSRF19_V1")
+dataset_fn, dataset_config = (
+    "surroundmodulation.datasets.monkey_loaders.monkey_static_loader_combined_new_format",
+    {
+        "dataset": dataset_name,
+        "neuronal_data_files": get_new_format_session_dirs(data_root),
+        "image_cache_path": str(data_root / "images_npy"),
+        "crop": 70,
+        "subsample": 1,
+        "seed": 1000,
+        "time_bins_sum": 12,
+        "batch_size": 128,
+    },
+)
 
 def create_random_pos_ensemble_model():
     model_m = copy.deepcopy(v1_convnext_ensemble)
